@@ -1,5 +1,9 @@
 package com.sample.simplydo;
 
-record TodoItem(Long id, String title, String description, String duedate, Boolean completed) {
+import org.springframework.data.annotation.Id;
+import java.sql.Timestamp;
+
+record TodoItem(@Id Long id, String title, String description, Timestamp duedate, Boolean completed) {
+
 
 }
