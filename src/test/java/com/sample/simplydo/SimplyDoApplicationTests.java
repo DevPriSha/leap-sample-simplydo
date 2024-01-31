@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.net.URI;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SimplyDoApplicationTests {
@@ -18,7 +19,7 @@ class SimplyDoApplicationTests {
 
 	@Test
 	void shouldReturnATodoListItemWhenDataIsSaved() {
-		ResponseEntity<String> response = restTemplate.getForEntity("/todoitem/9999", String.class);
+		ResponseEntity<String> response = restTemplate.getForEntity("/todolist/9999", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -34,9 +35,26 @@ class SimplyDoApplicationTests {
 
 	@Test
 	void shouldNotReturnATodoListItemWithAnUnknownId() {
-		ResponseEntity<String> response = restTemplate.getForEntity("/todoitem/1000", String.class);
+		ResponseEntity<String> response = restTemplate.getForEntity("/todolist/1000", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(response.getBody()).isBlank();
+	}
+
+	@Test
+	void shouldCreateANewTodoItem() {
+		TodoItem newTodoItem = new TodoItem(null, "Complete Backend", "", null, false);
+		ResponseEntity<Void> createResponse = restTemplate.postForEntity("/todolist", newTodoItem, Void.class);
+		assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+		URI locationOfNewTodoItem = createResponse.getHeaders().getLocation();
+		ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewTodoItem, String.class);
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	void shouldReturnEntireTodoListWhenListIsRequested() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/todolist", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 }
