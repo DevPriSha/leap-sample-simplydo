@@ -10,6 +10,7 @@ import java.net.URI;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Optional;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 //import java.io.*;
 
 @RestController
@@ -24,6 +25,7 @@ class TodoItemController {
 
     //READ
     @GetMapping("/{requestedId}")
+    @CrossOrigin(origins = "http://localhost:3000")
     private ResponseEntity<TodoItem> findById(@PathVariable Long requestedId) {
         Optional<TodoItem> todoItemOptional = simplyDoRepository.findById(requestedId);
         if (todoItemOptional.isPresent()) {
@@ -35,6 +37,7 @@ class TodoItemController {
 
     //CREATE
     @PostMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     private ResponseEntity<Void> createTodoItem(@RequestBody TodoItem newTodoItemRequest, UriComponentsBuilder ucb) {
         TodoItem savedTodoItem = simplyDoRepository.save(newTodoItemRequest);
         URI locationOfNewTodoItem = ucb
@@ -46,6 +49,7 @@ class TodoItemController {
 
     //READ ALL
     @GetMapping()
+    @CrossOrigin(origins = "http://localhost:3000")
     private ResponseEntity<Iterable<TodoItem>> findAll() {
         return ResponseEntity.ok(simplyDoRepository.findAll());
     }
