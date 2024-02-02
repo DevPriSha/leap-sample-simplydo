@@ -6,8 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.net.URI;
@@ -57,4 +60,23 @@ class SimplyDoApplicationTests {
 		ResponseEntity<String> response = restTemplate.getForEntity("/todolist", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
+
+	@Test
+	@DirtiesContext
+	void shouldUpdateAnExistingTodoItem() {
+		TodoItem todoItemUpdate = new TodoItem(null, "Yum", null, null, false);
+		HttpEntity<TodoItem> request = new HttpEntity<>(todoItemUpdate);
+		ResponseEntity<Void> response = restTemplate
+				.exchange("/todolist/9999", HttpMethod.PUT, request, Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldDeleteAnExistingTodoItem() {
+		ResponseEntity<Void> response = restTemplate
+				.exchange("/todolist/9999", HttpMethod.DELETE, null, Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+	}
 }
+
